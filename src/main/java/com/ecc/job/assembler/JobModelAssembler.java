@@ -3,6 +3,7 @@ package com.ecc.job.assembler;
 import com.ecc.job.controller.JobController;
 import com.ecc.job.model.Job;
 import com.ecc.job.model.JobModel;
+import com.ecc.job.model.JobStatus;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +37,12 @@ public class JobModelAssembler extends RepresentationModelAssemblerSupport<Job, 
         JobModel model = instantiateModel( aJob );
 
         model.add( linkTo( methodOn( JobController.class ).getJob( aJob.id() ) ).withSelfRel() );
+        model.add( linkTo( methodOn( JobController.class ).deleteJob( aJob.id() ) ).withRel( "delete" ) );
+
+        if ( aJob.status() == JobStatus.RUNNING )
+        {
+            model.add( linkTo( methodOn( JobController.class ).cancelJob( aJob.id() ) ).withRel( "cancel" ) );
+        }
 
         return model;
     }

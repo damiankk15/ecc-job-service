@@ -21,17 +21,17 @@ public class ApiResponse<T> extends RepresentationModel<ApiResponse<T>>
 
     public static <T> ApiResponse<T> success( T data )
     {
-        return new ApiResponse<>( "SUCCESS", data, List.of() );
+        return new ApiResponse<>( "OK", data, List.of() );
     }
 
     public static <T> ApiResponse<T> failure( String code, String message )
     {
-        return new ApiResponse<>( "FAILURE", null, List.of( new ApiError( code, message ) ) );
+        return new ApiResponse<>( "ERROR", null, List.of( new ApiError( code, message ) ) );
     }
 
     public static <T> ApiResponse<T> failure( List<ApiError> errors )
     {
-        return new ApiResponse<>( "FAILURE", null, errors );
+        return new ApiResponse<>( "ERROR", null, errors );
     }
 
     public String getStatus() { return status; }

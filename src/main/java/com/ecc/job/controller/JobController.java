@@ -15,8 +15,10 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,6 +56,15 @@ public class JobController
                     "2025-07-16T00:00:00.000Z",
                     "2025-07-16T00:00:00.000Z",
                     JobStatus.CANCELLED,
+                    "System"
+            ),
+            new Job(
+                    4,
+                    JobType.COMPANY_LIST_UPDATE,
+                    List.of( "GPW" ),
+                    "2025-07-17T08:00:00.000Z",
+                    null,
+                    JobStatus.RUNNING,
                     "System"
             )
     );
@@ -110,6 +121,38 @@ public class JobController
                 .map( ApiResponse::success )
                 .map( ResponseEntity::ok )
                 .orElseThrow( () -> new ResourceNotFoundException( "Job with id " + id + " not found" ) );
+    }
+
+    @PostMapping( value = "/{id}/cancel", produces = MediaTypes.HAL_JSON_VALUE )
+    public ResponseEntity<ApiResponse<JobModel>> cancelJob( @PathVariable long id )
+    {
+        Job job = JOBS.stream()
+                .filter( j -> j.id() == id )
+                .findFirst()
+                .orElseThrow( () -> new ResourceNotFoundException( "Job with id " + id + " not found" ) );
+
+        if ( job.status() != JobStatus.RUNNING )
+        {
+            return ResponseEntity.badRequest()
+                    .body( ApiResponse.failure( "INVALID_STATE",
+                            "Job " + id + " cannot be cancelled — current status: " + job.status() ) );
+        }
+
+        Job cancelled = new Job( job.id(), job.jobType(), job.scope(),
+                job.startedAt(), job.finishedAt(), JobStatus.CANCELLED, job.triggeredBy() );
+
+        return ResponseEntity.ok( ApiResponse.success( jobModelAssembler.toModel( cancelled ) ) );
+    }
+
+    @DeleteMapping( "/{id}" )
+    public ResponseEntity<Void> deleteJob( @PathVariable long id )
+    {
+        JOBS.stream()
+                .filter( j -> j.id() == id )
+                .findFirst()
+                .orElseThrow( () -> new ResourceNotFoundException( "Job with id " + id + " not found" ) );
+
+        return ResponseEntity.noContent().build();
     }
 
     private Comparator<Job> toComparator( Sort sort )
