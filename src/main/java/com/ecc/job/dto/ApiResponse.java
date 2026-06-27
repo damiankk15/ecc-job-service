@@ -1,15 +1,27 @@
 package com.ecc.job.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
 
 @JsonInclude( JsonInclude.Include.NON_NULL )
-public record ApiResponse<T>( String status, T data, List<ApiError> errors )
+public class ApiResponse<T> extends RepresentationModel<ApiResponse<T>>
 {
+    private final String status;
+    private final T data;
+    private final List<ApiError> errors;
+
+    private ApiResponse( String aStatus, T aData, List<ApiError> aErrors )
+    {
+        this.status = aStatus;
+        this.data = aData;
+        this.errors = aErrors;
+    }
+
     public static <T> ApiResponse<T> success( T data )
     {
-        return new ApiResponse<>( "SUCCESS", data, null );
+        return new ApiResponse<>( "SUCCESS", data, List.of() );
     }
 
     public static <T> ApiResponse<T> failure( String code, String message )
@@ -21,4 +33,8 @@ public record ApiResponse<T>( String status, T data, List<ApiError> errors )
     {
         return new ApiResponse<>( "FAILURE", null, errors );
     }
+
+    public String getStatus() { return status; }
+    public T getData() { return data; }
+    public List<ApiError> getErrors() { return errors; }
 }

@@ -2,6 +2,8 @@ package com.ecc.job;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -35,6 +37,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
     bearerFormat = "JWT",
     type = SecuritySchemeType.HTTP,
     in = SecuritySchemeIn.HEADER )
+@EnableSpringDataWebSupport( pageSerializationMode = PageSerializationMode.DIRECT )
 @SpringBootApplication
 public class Application
 {

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,7 +65,7 @@ public class JobController
         this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
-    @GetMapping
+    @GetMapping( produces = MediaTypes.HAL_JSON_VALUE )
     public ResponseEntity<ApiResponse<PagedModel<JobModel>>> getJobs( Pageable pageable )
     {
         List<Job> pageContent = JOBS.stream()
@@ -77,7 +78,7 @@ public class JobController
         return ResponseEntity.ok( ApiResponse.success( pagedResourcesAssembler.toModel( page, jobModelAssembler ) ) );
     }
 
-    @GetMapping("/{id}")
+    @GetMapping( value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE )
     public ResponseEntity<ApiResponse<JobModel>> getJob( @PathVariable long id )
     {
         return JOBS.stream()

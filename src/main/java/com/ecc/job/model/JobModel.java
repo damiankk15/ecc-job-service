@@ -1,6 +1,7 @@
 package com.ecc.job.model;
 
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * @version 1.0
  * @since 0.0.1-SNAPSHOT
  */
+@Relation( collectionRelation = "items", itemRelation = "item" )
 public class JobModel extends RepresentationModel<JobModel>
 {
     private final long id;
