@@ -37,7 +37,6 @@ public class JobModelAssembler extends RepresentationModelAssemblerSupport<Job, 
         JobModel model = instantiateModel( aJob );
 
         model.add( linkTo( methodOn( JobController.class ).getJob( aJob.id() ) ).withSelfRel() );
-        model.add( linkTo( methodOn( JobController.class ).deleteJob( aJob.id() ) ).withRel( "delete" ) );
 
         if ( aJob.status() == JobStatus.RUNNING )
         {
