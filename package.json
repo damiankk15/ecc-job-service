@@ -1,0 +1,13 @@
+{
+  "name": "ecc-job-service-formatting",
+  "private": true,
+  "version": "1.0.0",
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "prettier-plugin-java": "^2.6.6"
+  },
+  "scripts": {
+    "format": "prettier --write \"src/**/*.java\"",
+    "format:check": "prettier --check \"src/**/*.java\""
+  }
+}

@@ -1,9 +1,19 @@
 package com.ecc.job.model;
 
-public enum JobStatus
-{
+/**
+ * The lifecycle state of a {@link Job}.
+ *
+ * @author Damian Kuras
+ * @version 1.0
+ * @since 0.0.1-SNAPSHOT
+ */
+public enum JobStatus {
+    /** The job is currently executing. */
     RUNNING,
+    /** The job finished successfully. */
     SUCCEEDED,
+    /** The job finished with an error. */
     FAILED,
-    CANCELLED
+    /** The job was cancelled before it finished. */
+    CANCELLED,
 }

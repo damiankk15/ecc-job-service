@@ -1,8 +1,19 @@
 api:
-  title: '@project.name@'
-  description: '@project.description@'
-  version: '@project.version@'
+    title: "@project.name@"
+    description: "@project.description@"
+    version: "@project.version@"
 
 server:
-  port: 8080
-  forward-headers-strategy: framework
+    port: 8080
+    forward-headers-strategy: framework
+
+spring:
+    datasource:
+        url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/jobservice}
+        username: ${SPRING_DATASOURCE_USERNAME}
+        password: ${SPRING_DATASOURCE_PASSWORD}
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+        open-in-view: false

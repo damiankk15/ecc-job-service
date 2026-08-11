@@ -1,14 +1,14 @@
 package com.ecc.job.assembler;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import com.ecc.job.controller.JobController;
 import com.ecc.job.model.Job;
 import com.ecc.job.model.JobModel;
 import com.ecc.job.model.JobStatus;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Assembler that converts {@link Job} to {@link JobModel} with HATEOAS links.
@@ -18,29 +18,40 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * @since 0.0.1-SNAPSHOT
  */
 @Component
-public class JobModelAssembler extends RepresentationModelAssemblerSupport<Job, JobModel>
-{
-    public JobModelAssembler()
-    {
-        super( JobController.class, JobModel.class );
+public class JobModelAssembler extends RepresentationModelAssemblerSupport<Job, JobModel> {
+
+    /**
+     * Creates a new assembler that builds links relative to {@link JobController}.
+     */
+    public JobModelAssembler() {
+        super(JobController.class, JobModel.class);
     }
 
+    /**
+     * Wraps {@code job} in a {@link JobModel} without any HATEOAS links.
+     *
+     * @param job the job to wrap
+     * @return a new, link-less {@link JobModel}
+     */
     @Override
-    protected JobModel instantiateModel( Job aJob )
-    {
-        return new JobModel( aJob );
+    protected JobModel instantiateModel(Job job) {
+        return new JobModel(job);
     }
 
+    /**
+     * Converts {@code job} to a {@link JobModel}, adding a self link and, if the job is still {@link JobStatus#RUNNING}, a link to cancel it.
+     *
+     * @param job the job to convert
+     * @return the resulting {@link JobModel} with its HATEOAS links attached
+     */
     @Override
-    public JobModel toModel( Job aJob )
-    {
-        JobModel model = instantiateModel( aJob );
+    public JobModel toModel(Job job) {
+        JobModel model = instantiateModel(job);
 
-        model.add( linkTo( methodOn( JobController.class ).getJob( aJob.id() ) ).withSelfRel() );
+        model.add(linkTo(methodOn(JobController.class).getJob(job.getId())).withSelfRel());
 
-        if ( aJob.status() == JobStatus.RUNNING )
-        {
-            model.add( linkTo( methodOn( JobController.class ).cancelJob( aJob.id() ) ).withRel( "cancel" ) );
+        if (job.getStatus() == JobStatus.RUNNING) {
+            model.add(linkTo(methodOn(JobController.class).cancelJob(job.getId())).withRel("cancel"));
         }
 
         return model;
