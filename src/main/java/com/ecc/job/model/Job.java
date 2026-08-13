@@ -38,12 +38,14 @@ public class Job {
     @Column(name = "scope_value")
     private List<String> scope;
 
+    private Instant createdAt;
+
     private Instant startedAt;
 
     private Instant finishedAt;
 
     @Enumerated(EnumType.STRING)
-    private JobStatus status;
+    private JobStatus jobStatus;
 
     private String triggeredBy;
 
@@ -58,18 +60,29 @@ public class Job {
      * @param id the job id, or {@code null} for a job not yet persisted
      * @param jobType the kind of work the job performs
      * @param scope the companies/tickers (or other identifiers) the job acts on
-     * @param startedAt when the job started running
-     * @param finishedAt when the job reached a terminal state, or {@code null} if still running
-     * @param status the job's current lifecycle state
+     * @param createdAt when the job was created; also establishes FIFO order among jobs blocked by scope overlap
+     * @param startedAt when the job started running, or {@code null} while still {@link JobStatus#QUEUED}
+     * @param finishedAt when the job reached a terminal state, or {@code null} if still running or queued
+     * @param jobStatus the job's current lifecycle state
      * @param triggeredBy who or what triggered the job
      */
-    public Job(Long id, JobType jobType, List<String> scope, Instant startedAt, Instant finishedAt, JobStatus status, String triggeredBy) {
+    public Job(
+        Long id,
+        JobType jobType,
+        List<String> scope,
+        Instant createdAt,
+        Instant startedAt,
+        Instant finishedAt,
+        JobStatus jobStatus,
+        String triggeredBy
+    ) {
         this.id = id;
         this.jobType = jobType;
         this.scope = scope;
+        this.createdAt = createdAt;
         this.startedAt = startedAt;
         this.finishedAt = finishedAt;
-        this.status = status;
+        this.jobStatus = jobStatus;
         this.triggeredBy = triggeredBy;
     }
 
@@ -94,25 +107,43 @@ public class Job {
     /**
      * Returns what the job acts on.
      *
-     * @return the markets/companies the job targets
+     * @return the companies/tickers (or other identifiers) the job targets
      */
     public List<String> getScope() {
         return scope;
     }
 
     /**
+     * Returns when the job was created.
+     *
+     * @return the creation instant
+     */
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    /**
      * Returns when the job started running.
      *
-     * @return the start instant
+     * @return the start instant, or {@code null} while the job is still {@link JobStatus#QUEUED}
      */
     public Instant getStartedAt() {
         return startedAt;
     }
 
     /**
+     * Sets when the job started running.
+     *
+     * @param startedAt the start instant
+     */
+    public void setStartedAt(Instant startedAt) {
+        this.startedAt = startedAt;
+    }
+
+    /**
      * Returns when the job reached a terminal state.
      *
-     * @return the finish instant, or {@code null} if the job is still {@link JobStatus#RUNNING}
+     * @return the finish instant, or {@code null} if the job hasn't finished yet
      */
     public Instant getFinishedAt() {
         return finishedAt;
@@ -132,17 +163,17 @@ public class Job {
      *
      * @return the job status
      */
-    public JobStatus getStatus() {
-        return status;
+    public JobStatus getJobStatus() {
+        return jobStatus;
     }
 
     /**
      * Sets the job's current lifecycle state.
      *
-     * @param status the new status
+     * @param jobStatus the new status
      */
-    public void setStatus(JobStatus status) {
-        this.status = status;
+    public void setJobStatus(JobStatus jobStatus) {
+        this.jobStatus = jobStatus;
     }
 
     /**

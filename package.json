@@ -7,7 +7,7 @@
     "prettier-plugin-java": "^2.6.6"
   },
   "scripts": {
-    "format": "prettier --write \"src/**/*.java\"",
-    "format:check": "prettier --check \"src/**/*.java\""
+    "format": "prettier --write \"src/**/*.{java,yml,yaml}\"",
+    "format:check": "prettier --check \"src/**/*.{java,yml,yaml}\""
   }
 }

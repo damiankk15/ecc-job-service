@@ -73,9 +73,10 @@ public class JobController {
      * @param id exact job id to match
      * @param jobType exact job type to match
      * @param scope a single scope value the job's scope list must contain
+     * @param createdAt ISO-8601 instant the job must have been created at exactly
      * @param startedAt ISO-8601 instant the job must have started at exactly
      * @param finishedAt ISO-8601 instant the job must have finished at exactly
-     * @param status exact job status to match
+     * @param jobStatus exact job status to match
      * @param triggeredBy user who triggered the job (case-insensitive)
      * @param pageable page number, size, and sort order
      * @return {@code 200 OK} with the matching jobs as a HATEOAS page
@@ -85,13 +86,14 @@ public class JobController {
         @RequestParam(required = false) Long id,
         @RequestParam(required = false) JobType jobType,
         @RequestParam(required = false) String scope,
+        @RequestParam(required = false) Instant createdAt,
         @RequestParam(required = false) Instant startedAt,
         @RequestParam(required = false) Instant finishedAt,
-        @RequestParam(required = false) JobStatus status,
+        @RequestParam(required = false) JobStatus jobStatus,
         @RequestParam(required = false) String triggeredBy,
         Pageable pageable
     ) {
-        Page<Job> page = jobService.list(id, jobType, scope, startedAt, finishedAt, status, triggeredBy, pageable);
+        Page<Job> page = jobService.list(id, jobType, scope, createdAt, startedAt, finishedAt, jobStatus, triggeredBy, pageable);
 
         return ResponseEntity.ok(ApiResponse.success(pagedResourcesAssembler.toModel(page, jobModelAssembler)));
     }
@@ -108,10 +110,10 @@ public class JobController {
     }
 
     /**
-     * Cancels a running job.
+     * Cancels a running or queued job.
      *
      * @param id the job id
-     * @return {@code 200 OK} with the cancelled job, or {@code 400} if the job isn't currently {@link JobStatus#RUNNING}
+     * @return {@code 200 OK} with the cancelled job, or {@code 400} if the job isn't currently {@link JobStatus#RUNNING} or {@link JobStatus#QUEUED}
      */
     @PostMapping(value = "/{id}/cancel", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<ApiResponse<JobModel>> cancelJob(@PathVariable long id) {

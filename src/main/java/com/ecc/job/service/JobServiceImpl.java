@@ -8,8 +8,8 @@ import com.ecc.job.model.JobStatus;
 import com.ecc.job.model.JobType;
 import com.ecc.job.repository.JobRepository;
 import com.ecc.job.repository.JobSpecifications;
+import com.ecc.job.util.Instants;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,18 +24,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class JobServiceImpl implements JobService {
 
-    // Placeholder until triggeredBy is derived from the authenticated user (Keycloak JWT `sub` claim).
     private static final String MOCK_TRIGGERED_BY = "mock-user";
 
     private final JobRepository jobRepository;
+    private final JobDispatchService jobDispatchService;
 
     /**
-     * Creates a new service backed by the given repository.
+     * Creates a new service backed by the given repository and dispatcher.
      *
      * @param jobRepository the repository used to persist and query jobs
+     * @param jobDispatchService decides whether a job runs immediately or queues, and starts its execution
      */
-    public JobServiceImpl(JobRepository jobRepository) {
+    public JobServiceImpl(JobRepository jobRepository, JobDispatchService jobDispatchService) {
         this.jobRepository = jobRepository;
+        this.jobDispatchService = jobDispatchService;
     }
 
     /**
@@ -46,13 +48,17 @@ public class JobServiceImpl implements JobService {
         Long id,
         JobType jobType,
         String scope,
+        Instant createdAt,
         Instant startedAt,
         Instant finishedAt,
-        JobStatus status,
+        JobStatus jobStatus,
         String triggeredBy,
         Pageable pageable
     ) {
-        return jobRepository.findAll(JobSpecifications.filter(id, jobType, scope, startedAt, finishedAt, status, triggeredBy), pageable);
+        return jobRepository.findAll(
+            JobSpecifications.filter(id, jobType, scope, createdAt, startedAt, finishedAt, jobStatus, triggeredBy),
+            pageable
+        );
     }
 
     /**
@@ -68,8 +74,12 @@ public class JobServiceImpl implements JobService {
      */
     @Override
     public Job create(CreateJobRequest request) {
-        Job job = new Job(null, request.jobType(), request.scope(), now(), null, JobStatus.RUNNING, MOCK_TRIGGERED_BY);
-        return jobRepository.save(job);
+        Job job = new Job(null, request.jobType(), request.scope(), Instants.now(), null, null, JobStatus.QUEUED, MOCK_TRIGGERED_BY);
+        Job saved = jobRepository.save(job);
+
+        jobDispatchService.tryDispatch(saved);
+
+        return saved;
     }
 
     /**
@@ -78,14 +88,21 @@ public class JobServiceImpl implements JobService {
     @Override
     public Job cancel(long id) {
         Job job = get(id);
+        JobStatus previousStatus = job.getJobStatus();
 
-        if (job.getStatus() != JobStatus.RUNNING) {
-            throw new InvalidJobStateException("Job " + id + " cannot be cancelled — current status: " + job.getStatus());
+        if (previousStatus != JobStatus.RUNNING && previousStatus != JobStatus.QUEUED) {
+            throw new InvalidJobStateException("Job " + id + " cannot be cancelled — current status: " + previousStatus);
         }
 
-        job.setStatus(JobStatus.CANCELLED);
-        job.setFinishedAt(now());
-        return jobRepository.save(job);
+        job.setJobStatus(JobStatus.CANCELLED);
+        job.setFinishedAt(Instants.now());
+        Job cancelled = jobRepository.save(job);
+
+        if (previousStatus == JobStatus.QUEUED) {
+            jobDispatchService.dispatchQueuedJobs(cancelled.getJobType());
+        }
+
+        return cancelled;
     }
 
     /**
@@ -94,12 +111,5 @@ public class JobServiceImpl implements JobService {
     @Override
     public void delete(long id) {
         jobRepository.delete(get(id));
-    }
-
-    // Truncated to microseconds since that's the precision the DB actually stores; keeping the
-    // in-memory value at full nanosecond precision would silently diverge from what's persisted,
-    // breaking exact-instant equality filters (a client filtering by a startedAt it was just given).
-    private Instant now() {
-        return Instant.now().truncatedTo(ChronoUnit.MICROS);
     }
 }

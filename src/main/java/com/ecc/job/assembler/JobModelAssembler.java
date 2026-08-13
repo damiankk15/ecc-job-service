@@ -39,7 +39,8 @@ public class JobModelAssembler extends RepresentationModelAssemblerSupport<Job, 
     }
 
     /**
-     * Converts {@code job} to a {@link JobModel}, adding a self link and, if the job is still {@link JobStatus#RUNNING}, a link to cancel it.
+     * Converts {@code job} to a {@link JobModel}, adding a self link and, if the job is still {@link JobStatus#RUNNING} or {@link JobStatus#QUEUED},
+     * a link to cancel it.
      *
      * @param job the job to convert
      * @return the resulting {@link JobModel} with its HATEOAS links attached
@@ -50,7 +51,7 @@ public class JobModelAssembler extends RepresentationModelAssemblerSupport<Job, 
 
         model.add(linkTo(methodOn(JobController.class).getJob(job.getId())).withSelfRel());
 
-        if (job.getStatus() == JobStatus.RUNNING) {
+        if (job.getJobStatus() == JobStatus.RUNNING || job.getJobStatus() == JobStatus.QUEUED) {
             model.add(linkTo(methodOn(JobController.class).cancelJob(job.getId())).withRel("cancel"));
         }
 

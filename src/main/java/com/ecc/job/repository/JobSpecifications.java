@@ -18,6 +18,9 @@ import org.springframework.data.jpa.domain.Specification;
  */
 public final class JobSpecifications {
 
+    /**
+     * Not instantiable — every member is static.
+     */
     private JobSpecifications() {}
 
     /**
@@ -26,9 +29,10 @@ public final class JobSpecifications {
      * @param id exact job id to match
      * @param jobType exact job type to match
      * @param scope a single scope value the job's scope list must contain
+     * @param createdAt exact creation instant to match
      * @param startedAt exact start instant to match
      * @param finishedAt exact finish instant to match
-     * @param status exact job status to match
+     * @param jobStatus exact job status to match
      * @param triggeredBy user who triggered the job, matched case-insensitively
      * @return a specification restricted to the non-null parameters
      */
@@ -36,17 +40,19 @@ public final class JobSpecifications {
         Long id,
         JobType jobType,
         String scope,
+        Instant createdAt,
         Instant startedAt,
         Instant finishedAt,
-        JobStatus status,
+        JobStatus jobStatus,
         String triggeredBy
     ) {
         return Specification.where(hasId(id))
             .and(hasJobType(jobType))
             .and(hasScope(scope))
+            .and(hasCreatedAt(createdAt))
             .and(hasStartedAt(startedAt))
             .and(hasFinishedAt(finishedAt))
-            .and(hasStatus(status))
+            .and(hasJobStatus(jobStatus))
             .and(hasTriggeredBy(triggeredBy));
     }
 
@@ -71,48 +77,6 @@ public final class JobSpecifications {
     }
 
     /**
-     * Matches an exact {@code startedAt}, or no restriction if {@code startedAt} is {@code null}.
-     *
-     * @param startedAt the start instant to match
-     * @return the resulting specification
-     */
-    private static Specification<Job> hasStartedAt(Instant startedAt) {
-        return equal("startedAt", startedAt);
-    }
-
-    /**
-     * Matches an exact {@code finishedAt}, or no restriction if {@code finishedAt} is {@code null}.
-     *
-     * @param finishedAt the finish instant to match
-     * @return the resulting specification
-     */
-    private static Specification<Job> hasFinishedAt(Instant finishedAt) {
-        return equal("finishedAt", finishedAt);
-    }
-
-    /**
-     * Matches an exact {@code status}, or no restriction if {@code status} is {@code null}.
-     *
-     * @param status the job status to match
-     * @return the resulting specification
-     */
-    private static Specification<Job> hasStatus(JobStatus status) {
-        return equal("status", status);
-    }
-
-    /**
-     * Builds a simple {@code attribute = value} condition, or no restriction if {@code value} is {@code null}. Shared by the single-field equality
-     * checks above.
-     *
-     * @param attribute the {@link Job} entity attribute name
-     * @param value the value it must equal, or {@code null} for no restriction
-     * @return the resulting specification
-     */
-    private static <V> Specification<Job> equal(String attribute, V value) {
-        return (root, query, cb) -> value == null ? null : cb.equal(root.get(attribute), value);
-    }
-
-    /**
      * Matches jobs whose {@code scope} collection contains {@code scope}, or no restriction if {@code scope} is {@code null}. Joins the
      * {@code job_scope} collection table and marks the query distinct so a job can't appear more than once if its scope list has duplicate values.
      *
@@ -133,6 +97,46 @@ public final class JobSpecifications {
     }
 
     /**
+     * Matches an exact {@code createdAt}, or no restriction if {@code createdAt} is {@code null}.
+     *
+     * @param createdAt the creation instant to match
+     * @return the resulting specification
+     */
+    private static Specification<Job> hasCreatedAt(Instant createdAt) {
+        return equal("createdAt", createdAt);
+    }
+
+    /**
+     * Matches an exact {@code startedAt}, or no restriction if {@code startedAt} is {@code null}.
+     *
+     * @param startedAt the start instant to match
+     * @return the resulting specification
+     */
+    private static Specification<Job> hasStartedAt(Instant startedAt) {
+        return equal("startedAt", startedAt);
+    }
+
+    /**
+     * Matches an exact {@code finishedAt}, or no restriction if {@code finishedAt} is {@code null}.
+     *
+     * @param finishedAt the finish instant to match
+     * @return the resulting specification
+     */
+    private static Specification<Job> hasFinishedAt(Instant finishedAt) {
+        return equal("finishedAt", finishedAt);
+    }
+
+    /**
+     * Matches an exact {@code jobStatus}, or no restriction if {@code jobStatus} is {@code null}.
+     *
+     * @param jobStatus the job status to match
+     * @return the resulting specification
+     */
+    private static Specification<Job> hasJobStatus(JobStatus jobStatus) {
+        return equal("jobStatus", jobStatus);
+    }
+
+    /**
      * Matches an exact {@code triggeredBy}, case-insensitively, or no restriction if {@code triggeredBy} is {@code null}.
      *
      * @param triggeredBy the triggering user to match
@@ -140,5 +144,17 @@ public final class JobSpecifications {
      */
     private static Specification<Job> hasTriggeredBy(String triggeredBy) {
         return (root, query, cb) -> triggeredBy == null ? null : cb.equal(cb.lower(root.get("triggeredBy")), triggeredBy.toLowerCase());
+    }
+
+    /**
+     * Builds a simple {@code attribute = value} condition, or no restriction if {@code value} is {@code null}. Shared by the single-field equality
+     * checks above.
+     *
+     * @param attribute the {@link Job} entity attribute name
+     * @param value the value it must equal, or {@code null} for no restriction
+     * @return the resulting specification
+     */
+    private static <V> Specification<Job> equal(String attribute, V value) {
+        return (root, query, cb) -> value == null ? null : cb.equal(root.get(attribute), value);
     }
 }

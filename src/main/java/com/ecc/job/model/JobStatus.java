@@ -8,6 +8,8 @@ package com.ecc.job.model;
  * @since 0.0.1-SNAPSHOT
  */
 public enum JobStatus {
+    /** The job is waiting for a conflicting job (same type, overlapping scope) to finish. */
+    QUEUED,
     /** The job is currently executing. */
     RUNNING,
     /** The job finished successfully. */

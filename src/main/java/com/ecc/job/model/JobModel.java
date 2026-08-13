@@ -18,9 +18,10 @@ public class JobModel extends RepresentationModel<JobModel> {
     private final long id;
     private final JobType jobType;
     private final List<String> scope;
+    private final Instant createdAt;
     private final Instant startedAt;
     private final Instant finishedAt;
-    private final JobStatus status;
+    private final JobStatus jobStatus;
     private final String triggeredBy;
 
     /**
@@ -32,9 +33,10 @@ public class JobModel extends RepresentationModel<JobModel> {
         this.id = job.getId();
         this.jobType = job.getJobType();
         this.scope = job.getScope();
+        this.createdAt = job.getCreatedAt();
         this.startedAt = job.getStartedAt();
         this.finishedAt = job.getFinishedAt();
-        this.status = job.getStatus();
+        this.jobStatus = job.getJobStatus();
         this.triggeredBy = job.getTriggeredBy();
     }
 
@@ -66,9 +68,18 @@ public class JobModel extends RepresentationModel<JobModel> {
     }
 
     /**
+     * Returns when the job was created.
+     *
+     * @return the creation instant
+     */
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    /**
      * Returns when the job started running.
      *
-     * @return the start instant
+     * @return the start instant, or {@code null} while the job is still {@link JobStatus#QUEUED}
      */
     public Instant getStartedAt() {
         return startedAt;
@@ -77,7 +88,7 @@ public class JobModel extends RepresentationModel<JobModel> {
     /**
      * Returns when the job reached a terminal state.
      *
-     * @return the finish instant, or {@code null} if the job is still {@link JobStatus#RUNNING}
+     * @return the finish instant, or {@code null} if the job hasn't finished yet
      */
     public Instant getFinishedAt() {
         return finishedAt;
@@ -88,8 +99,8 @@ public class JobModel extends RepresentationModel<JobModel> {
      *
      * @return the job status
      */
-    public JobStatus getStatus() {
-        return status;
+    public JobStatus getJobStatus() {
+        return jobStatus;
     }
 
     /**

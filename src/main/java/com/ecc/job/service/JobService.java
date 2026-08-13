@@ -18,17 +18,16 @@ import org.springframework.data.domain.Pageable;
  * @since 0.0.1-SNAPSHOT
  */
 public interface JobService {
-
     /**
-     * Lists jobs, optionally filtered by any combination of the given parameters, paged and
-     * sorted according to {@code pageable}.
+     * Lists jobs, optionally filtered by any combination of the given parameters, paged and sorted according to {@code pageable}.
      *
      * @param id exact job id to match
      * @param jobType exact job type to match
      * @param scope a single scope value the job's scope list must contain
+     * @param createdAt exact creation instant to match
      * @param startedAt exact start instant to match
      * @param finishedAt exact finish instant to match
-     * @param status exact job status to match
+     * @param jobStatus exact job status to match
      * @param triggeredBy user who triggered the job, matched case-insensitively
      * @param pageable page number, size, and sort order
      * @return the matching jobs
@@ -37,9 +36,10 @@ public interface JobService {
         Long id,
         JobType jobType,
         String scope,
+        Instant createdAt,
         Instant startedAt,
         Instant finishedAt,
-        JobStatus status,
+        JobStatus jobStatus,
         String triggeredBy,
         Pageable pageable
     );
@@ -54,20 +54,21 @@ public interface JobService {
     Job get(long id);
 
     /**
-     * Creates and immediately starts a new job.
+     * Creates a new job and dispatches it to {@link JobStatus#RUNNING} immediately, unless another job of the same type with an overlapping scope is
+     * already active — in that case it's created {@link JobStatus#QUEUED} and dispatched automatically once that conflict clears.
      *
      * @param request the job type and scope
-     * @return the created, {@link JobStatus#RUNNING} job
+     * @return the created job, either {@link JobStatus#RUNNING} or {@link JobStatus#QUEUED}
      */
     Job create(CreateJobRequest request);
 
     /**
-     * Cancels a running job.
+     * Cancels a running or queued job.
      *
      * @param id the job id
      * @return the cancelled job
      * @throws ResourceNotFoundException if no job with that id exists
-     * @throws InvalidJobStateException if the job isn't currently {@link JobStatus#RUNNING}
+     * @throws InvalidJobStateException if the job isn't currently {@link JobStatus#RUNNING} or {@link JobStatus#QUEUED}
      */
     Job cancel(long id);
 
