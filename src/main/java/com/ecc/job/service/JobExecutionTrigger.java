@@ -1,6 +1,7 @@
 package com.ecc.job.service;
 
 import com.ecc.job.model.Job;
+import com.ecc.job.service.event.JobCompletedEvent;
 
 /**
  * Starts the actual work behind a {@link Job} once it's been dispatched to {@link com.ecc.job.model.JobStatus#RUNNING}. Implementations report

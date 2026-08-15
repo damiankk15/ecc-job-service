@@ -4,6 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.ecc.job.controller.JobController;
+import com.ecc.job.controller.JobLogController;
 import com.ecc.job.model.Job;
 import com.ecc.job.model.JobModel;
 import com.ecc.job.model.JobStatus;
@@ -39,8 +40,8 @@ public class JobModelAssembler extends RepresentationModelAssemblerSupport<Job, 
     }
 
     /**
-     * Converts {@code job} to a {@link JobModel}, adding a self link and, if the job is still {@link JobStatus#RUNNING} or {@link JobStatus#QUEUED},
-     * a link to cancel it.
+     * Converts {@code job} to a {@link JobModel}, adding a self link, a link to its logs, and, if the job is still {@link JobStatus#RUNNING} or
+     * {@link JobStatus#QUEUED}, a link to cancel it.
      *
      * @param job the job to convert
      * @return the resulting {@link JobModel} with its HATEOAS links attached
@@ -50,6 +51,7 @@ public class JobModelAssembler extends RepresentationModelAssemblerSupport<Job, 
         JobModel model = instantiateModel(job);
 
         model.add(linkTo(methodOn(JobController.class).getJob(job.getId())).withSelfRel());
+        model.add(linkTo(methodOn(JobLogController.class).getJobLogs(job.getId(), null)).withRel("logs"));
 
         if (job.getJobStatus() == JobStatus.RUNNING || job.getJobStatus() == JobStatus.QUEUED) {
             model.add(linkTo(methodOn(JobController.class).cancelJob(job.getId())).withRel("cancel"));

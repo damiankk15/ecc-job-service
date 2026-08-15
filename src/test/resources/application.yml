@@ -10,4 +10,4 @@ spring:
 
 job:
   execution:
-    mock-delay-ms: 10000
+    mock-delay-ms: 100

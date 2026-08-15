@@ -32,9 +32,8 @@ class JobControllerIntegrationTest {
     void createJob_persistsAndReturnsRunningJob() throws Exception {
         CreateJobRequest request = new CreateJobRequest(JobType.COMPANY_LIST_UPDATE, List.of("GPW-create"));
 
-        mockMvc.perform(
-            post("/api/jobs").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request))
-        )
+        mockMvc
+            .perform(post("/api/jobs").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.data.jobStatus").value("RUNNING"))
             .andExpect(jsonPath("$.data.jobType").value("COMPANY_LIST_UPDATE"));
@@ -42,7 +41,8 @@ class JobControllerIntegrationTest {
 
     @Test
     void createJob_withMalformedBody_returnsInvalidRequest() throws Exception {
-        mockMvc.perform(post("/api/jobs").contentType(MediaType.APPLICATION_JSON).content("{not-valid-json"))
+        mockMvc
+            .perform(post("/api/jobs").contentType(MediaType.APPLICATION_JSON).content("{not-valid-json"))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.errors[0].code").value("INVALID_REQUEST"));
     }
@@ -51,9 +51,8 @@ class JobControllerIntegrationTest {
     void createJob_withoutScope_returnsValidationError() throws Exception {
         CreateJobRequest request = new CreateJobRequest(JobType.COMPANY_LIST_UPDATE, List.of());
 
-        mockMvc.perform(
-            post("/api/jobs").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request))
-        )
+        mockMvc
+            .perform(post("/api/jobs").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.errors[0].code").value("VALIDATION_ERROR"))
             .andExpect(jsonPath("$.errors[0].field").value("scope"));
@@ -70,7 +69,8 @@ class JobControllerIntegrationTest {
     void getJobs_filtersById() throws Exception {
         int id = (int) createJob(JobType.COMPANY_LIST_UPDATE, List.of("GPW-filterById"));
 
-        mockMvc.perform(get("/api/jobs").param("id", String.valueOf(id)))
+        mockMvc
+            .perform(get("/api/jobs").param("id", String.valueOf(id)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data._embedded.items.length()").value(1))
             .andExpect(jsonPath("$.data._embedded.items[0].id").value(id));
@@ -78,10 +78,12 @@ class JobControllerIntegrationTest {
 
     @Test
     void getJobs_filtersByStartedAt() throws Exception {
-        String response = mockMvc.perform(
-            post("/api/jobs").contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new CreateJobRequest(JobType.COMPANY_LIST_UPDATE, List.of("GPW-filterStartedAt"))))
-        )
+        String response = mockMvc
+            .perform(
+                post("/api/jobs")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(new CreateJobRequest(JobType.COMPANY_LIST_UPDATE, List.of("GPW-filterStartedAt"))))
+            )
             .andReturn()
             .getResponse()
             .getContentAsString();
@@ -90,7 +92,8 @@ class JobControllerIntegrationTest {
         int id = created.path("id").asInt();
         String startedAt = created.path("startedAt").asString();
 
-        mockMvc.perform(get("/api/jobs").param("startedAt", startedAt))
+        mockMvc
+            .perform(get("/api/jobs").param("startedAt", startedAt))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data._embedded.items.length()").value(1))
             .andExpect(jsonPath("$.data._embedded.items[0].id").value(id));
@@ -98,7 +101,8 @@ class JobControllerIntegrationTest {
 
     @Test
     void getJobs_withMalformedStartedAt_returnsInvalidRequest() throws Exception {
-        mockMvc.perform(get("/api/jobs").param("startedAt", "not-a-date"))
+        mockMvc
+            .perform(get("/api/jobs").param("startedAt", "not-a-date"))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.errors[0].code").value("INVALID_REQUEST"));
     }
@@ -109,7 +113,8 @@ class JobControllerIntegrationTest {
 
         mockMvc.perform(post("/api/jobs/{id}/cancel", id)).andExpect(status().isOk());
 
-        mockMvc.perform(post("/api/jobs/{id}/cancel", id))
+        mockMvc
+            .perform(post("/api/jobs/{id}/cancel", id))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.errors[0].code").value("INVALID_STATE"));
     }
@@ -151,7 +156,8 @@ class JobControllerIntegrationTest {
 
         assertStatus(queuedId, "QUEUED");
 
-        mockMvc.perform(post("/api/jobs/{id}/cancel", queuedId))
+        mockMvc
+            .perform(post("/api/jobs/{id}/cancel", queuedId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.jobStatus").value("CANCELLED"));
     }
@@ -183,9 +189,8 @@ class JobControllerIntegrationTest {
     private long createJob(JobType jobType, List<String> scope) throws Exception {
         CreateJobRequest request = new CreateJobRequest(jobType, scope);
 
-        String response = mockMvc.perform(
-            post("/api/jobs").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request))
-        )
+        String response = mockMvc
+            .perform(post("/api/jobs").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
             .andReturn()
             .getResponse()
             .getContentAsString();

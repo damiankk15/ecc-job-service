@@ -8,8 +8,10 @@ import com.ecc.job.model.JobStatus;
 import com.ecc.job.model.JobType;
 import com.ecc.job.repository.JobRepository;
 import com.ecc.job.repository.JobSpecifications;
+import com.ecc.job.service.event.JobTerminatedEvent;
 import com.ecc.job.util.Instants;
 import java.time.Instant;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,16 +30,19 @@ public class JobServiceImpl implements JobService {
 
     private final JobRepository jobRepository;
     private final JobDispatchService jobDispatchService;
+    private final ApplicationEventPublisher events;
 
     /**
      * Creates a new service backed by the given repository and dispatcher.
      *
      * @param jobRepository the repository used to persist and query jobs
      * @param jobDispatchService decides whether a job runs immediately or queues, and starts its execution
+     * @param events used to publish {@link JobTerminatedEvent} when a job is cancelled or deleted
      */
-    public JobServiceImpl(JobRepository jobRepository, JobDispatchService jobDispatchService) {
+    public JobServiceImpl(JobRepository jobRepository, JobDispatchService jobDispatchService, ApplicationEventPublisher events) {
         this.jobRepository = jobRepository;
         this.jobDispatchService = jobDispatchService;
+        this.events = events;
     }
 
     /**
@@ -76,7 +81,6 @@ public class JobServiceImpl implements JobService {
     public Job create(CreateJobRequest request) {
         Job job = new Job(null, request.jobType(), request.scope(), Instants.now(), null, null, JobStatus.QUEUED, MOCK_TRIGGERED_BY);
         Job saved = jobRepository.save(job);
-
         jobDispatchService.tryDispatch(saved);
 
         return saved;
@@ -97,6 +101,7 @@ public class JobServiceImpl implements JobService {
         job.setJobStatus(JobStatus.CANCELLED);
         job.setFinishedAt(Instants.now());
         Job cancelled = jobRepository.save(job);
+        events.publishEvent(new JobTerminatedEvent(cancelled.getId()));
 
         if (previousStatus == JobStatus.QUEUED) {
             jobDispatchService.dispatchQueuedJobs(cancelled.getJobType());
@@ -110,6 +115,8 @@ public class JobServiceImpl implements JobService {
      */
     @Override
     public void delete(long id) {
-        jobRepository.delete(get(id));
+        Job job = get(id);
+        jobRepository.delete(job);
+        events.publishEvent(new JobTerminatedEvent(job.getId()));
     }
 }

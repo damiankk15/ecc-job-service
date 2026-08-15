@@ -4,12 +4,15 @@ import com.ecc.job.model.Job;
 import com.ecc.job.model.JobStatus;
 import com.ecc.job.model.JobType;
 import com.ecc.job.repository.JobRepository;
+import com.ecc.job.service.event.JobCompletedEvent;
+import com.ecc.job.service.event.JobTerminatedEvent;
 import com.ecc.job.util.Instants;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
@@ -33,16 +36,19 @@ public class JobDispatchService {
 
     private final JobRepository jobRepository;
     private final JobExecutionTrigger jobExecutionTrigger;
+    private final ApplicationEventPublisher events;
 
     /**
      * Creates a new dispatch service.
      *
      * @param jobRepository the repository used to query and persist jobs
      * @param jobExecutionTrigger starts the actual work behind a dispatched job
+     * @param events used to publish {@link JobTerminatedEvent} when a job reaches a terminal status
      */
-    public JobDispatchService(JobRepository jobRepository, JobExecutionTrigger jobExecutionTrigger) {
+    public JobDispatchService(JobRepository jobRepository, JobExecutionTrigger jobExecutionTrigger, ApplicationEventPublisher events) {
         this.jobRepository = jobRepository;
         this.jobExecutionTrigger = jobExecutionTrigger;
+        this.events = events;
     }
 
     /**
@@ -98,6 +104,7 @@ public class JobDispatchService {
         job.setJobStatus(event.success() ? JobStatus.SUCCEEDED : JobStatus.FAILED);
         job.setFinishedAt(Instants.now());
         jobRepository.save(job);
+        events.publishEvent(new JobTerminatedEvent(job.getId()));
 
         dispatchQueuedJobs(job.getJobType());
     }

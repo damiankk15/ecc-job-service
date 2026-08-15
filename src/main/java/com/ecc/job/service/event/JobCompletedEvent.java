@@ -1,4 +1,7 @@
-package com.ecc.job.service;
+package com.ecc.job.service.event;
+
+import com.ecc.job.service.JobDispatchService;
+import com.ecc.job.service.JobExecutionTrigger;
 
 /**
  * Published when a {@link JobExecutionTrigger} finishes running a job, so {@link JobDispatchService} can record the result without either class
