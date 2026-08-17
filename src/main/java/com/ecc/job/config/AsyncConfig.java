@@ -7,8 +7,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
- * Enables {@code @Async} methods (used by {@link com.ecc.job.service.execution.CompaniesServiceExecutionTrigger} and its test-only counterpart) and
- * configures the thread pool they run on.
+ * Enables {@code @Async} methods (used by {@link com.ecc.job.service.execution.handler.AbstractRemoteJobTypeExecutionHandler} and its test-only
+ * counterpart) and configures the thread pool they run on.
  *
  * @author Damian Kuras
  * @version 1.0

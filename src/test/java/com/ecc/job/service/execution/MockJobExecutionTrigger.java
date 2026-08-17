@@ -7,18 +7,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
- * Test-only stand-in for {@link CompaniesServiceExecutionTrigger}, the real implementation that calls companies-service. Simulates the round trip
+ * Test-only stand-in for {@link DelegatingJobExecutionTrigger} and the per-job-type handlers it dispatches to. Simulates the round trip
  * (job-service triggers work, the other side eventually reports back with progress and a result) entirely in-process, with a fixed delay and a
- * couple of canned log lines, so the test suite doesn't depend on a real companies-service instance being reachable.
+ * couple of canned log lines, so the test suite doesn't depend on any real downstream service being reachable.
  *
  * @author Damian Kuras
  * @version 1.0
  * @since 0.0.1-SNAPSHOT
  */
-@Component
+@Service
 @Profile("test")
 public class MockJobExecutionTrigger implements JobExecutionTrigger {
 
