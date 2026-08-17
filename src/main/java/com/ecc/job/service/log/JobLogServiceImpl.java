@@ -6,8 +6,6 @@ import com.ecc.job.model.LogLevel;
 import com.ecc.job.repository.JobLogRepository;
 import com.ecc.job.repository.JobRepository;
 import com.ecc.job.service.JobService;
-import com.ecc.job.service.MockJobExecutionTrigger;
-import com.ecc.job.service.event.JobLogCreatedEvent;
 import com.ecc.job.util.Instants;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -30,8 +28,9 @@ public class JobLogServiceImpl implements JobLogService {
 
     /**
      * Creates a new service backed by the given repositories and event publisher. Depends on {@link JobRepository} directly, rather than
-     * {@link JobService}, since {@link MockJobExecutionTrigger} (reached from {@code JobServiceImpl} via {@code JobDispatchService}) depends on
-     * this service to record progress — depending back on {@code JobService} here would create a circular bean dependency.
+     * {@link JobService}, because the active {@code JobExecutionTrigger} (reached from {@code JobServiceImpl} via {@code JobDispatchService}) may
+     * itself depend on this service to record progress — as the test-only mock trigger does — so depending back on {@code JobService} here would
+     * create a circular bean dependency in that case.
      *
      * @param jobRepository used to confirm a job exists before listing its logs
      * @param jobLogRepository the repository used to persist and query log lines

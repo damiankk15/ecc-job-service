@@ -1,6 +1,6 @@
-package com.ecc.job.service.event;
+package com.ecc.job.service;
 
-import com.ecc.job.service.JobDispatchService;
+import com.ecc.job.service.execution.JobCompletedEvent;
 import com.ecc.job.service.log.JobLogStreamRegistry;
 
 /**

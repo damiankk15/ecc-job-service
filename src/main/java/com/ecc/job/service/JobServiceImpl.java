@@ -8,7 +8,6 @@ import com.ecc.job.model.JobStatus;
 import com.ecc.job.model.JobType;
 import com.ecc.job.repository.JobRepository;
 import com.ecc.job.repository.JobSpecifications;
-import com.ecc.job.service.event.JobTerminatedEvent;
 import com.ecc.job.util.Instants;
 import java.time.Instant;
 import org.springframework.context.ApplicationEventPublisher;

@@ -101,34 +101,34 @@ public class JobController {
     /**
      * Fetches a single job by id.
      *
-     * @param id the job id
+     * @param jobId the job id
      * @return {@code 200 OK} with the job, or {@code 404} if it doesn't exist
      */
-    @GetMapping(value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
-    public ResponseEntity<ApiResponse<JobModel>> getJob(@PathVariable long id) {
-        return ResponseEntity.ok(ApiResponse.success(jobModelAssembler.toModel(jobService.get(id))));
+    @GetMapping(value = "/{jobId}", produces = MediaTypes.HAL_JSON_VALUE)
+    public ResponseEntity<ApiResponse<JobModel>> getJob(@PathVariable long jobId) {
+        return ResponseEntity.ok(ApiResponse.success(jobModelAssembler.toModel(jobService.get(jobId))));
     }
 
     /**
      * Cancels a running or queued job.
      *
-     * @param id the job id
+     * @param jobId the job id
      * @return {@code 200 OK} with the cancelled job, or {@code 400} if the job isn't currently {@link JobStatus#RUNNING} or {@link JobStatus#QUEUED}
      */
-    @PostMapping(value = "/{id}/cancel", produces = MediaTypes.HAL_JSON_VALUE)
-    public ResponseEntity<ApiResponse<JobModel>> cancelJob(@PathVariable long id) {
-        return ResponseEntity.ok(ApiResponse.success(jobModelAssembler.toModel(jobService.cancel(id))));
+    @PostMapping(value = "/{jobId}/cancel", produces = MediaTypes.HAL_JSON_VALUE)
+    public ResponseEntity<ApiResponse<JobModel>> cancelJob(@PathVariable long jobId) {
+        return ResponseEntity.ok(ApiResponse.success(jobModelAssembler.toModel(jobService.cancel(jobId))));
     }
 
     /**
      * Deletes a job.
      *
-     * @param id the job id
+     * @param jobId the job id
      * @return {@code 204 No Content}, or {@code 404} if the job doesn't exist
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteJob(@PathVariable long id) {
-        jobService.delete(id);
+    @DeleteMapping("/{jobId}")
+    public ResponseEntity<Void> deleteJob(@PathVariable long jobId) {
+        jobService.delete(jobId);
 
         return ResponseEntity.noContent().build();
     }

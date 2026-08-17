@@ -1,25 +1,25 @@
-package com.ecc.job.service;
+package com.ecc.job.service.execution;
 
 import com.ecc.job.model.Job;
 import com.ecc.job.model.LogLevel;
-import com.ecc.job.service.event.JobCompletedEvent;
 import com.ecc.job.service.log.JobLogService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
- * Temporary stand-in for the future outbound call to companies-service, which doesn't exist yet. Simulates the round trip (job-service triggers work,
- * the other side eventually reports back with progress and a result) with a fixed delay and a couple of canned log lines instead of a real HTTP
- * call. Swapping this out for a real {@link JobExecutionTrigger} implementation later shouldn't require any changes to {@link JobDispatchService} or
- * anything else that depends on this interface.
+ * Test-only stand-in for {@link CompaniesServiceExecutionTrigger}, the real implementation that calls companies-service. Simulates the round trip
+ * (job-service triggers work, the other side eventually reports back with progress and a result) entirely in-process, with a fixed delay and a
+ * couple of canned log lines, so the test suite doesn't depend on a real companies-service instance being reachable.
  *
  * @author Damian Kuras
  * @version 1.0
  * @since 0.0.1-SNAPSHOT
  */
 @Component
+@Profile("test")
 public class MockJobExecutionTrigger implements JobExecutionTrigger {
 
     private final ApplicationEventPublisher events;

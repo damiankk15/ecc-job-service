@@ -93,7 +93,7 @@ class JobControllerIntegrationTest {
         String startedAt = created.path("startedAt").asString();
 
         mockMvc
-            .perform(get("/api/jobs").param("startedAt", startedAt))
+            .perform(get("/api/jobs").param("startedAt", startedAt).param("scope", "GPW-filterStartedAt"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data._embedded.items.length()").value(1))
             .andExpect(jsonPath("$.data._embedded.items[0].id").value(id));

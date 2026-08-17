@@ -3,7 +3,6 @@ package com.ecc.job.service.log;
 import com.ecc.job.exception.ResourceNotFoundException;
 import com.ecc.job.model.JobLog;
 import com.ecc.job.model.LogLevel;
-import com.ecc.job.service.event.JobLogCreatedEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

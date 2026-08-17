@@ -1,7 +1,6 @@
-package com.ecc.job.service.event;
+package com.ecc.job.service.log;
 
 import com.ecc.job.model.JobLog;
-import com.ecc.job.service.log.JobLogStreamRegistry;
 
 /**
  * Published whenever a new {@link JobLog} line is recorded, so {@link JobLogStreamRegistry} can push it to any clients currently streaming that
