@@ -7,8 +7,7 @@ import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSuppor
 import org.springframework.stereotype.Component;
 
 /**
- * Assembler that converts {@link JobLog} to {@link JobLogModel}. Log lines aren't independently addressable resources, so unlike
- * {@link JobModelAssembler} this never adds any links.
+ * Assembler that converts {@link JobLog} to {@link JobLogModel} with HATEOAS links.
  *
  * @author Damian Kuras
  * @version 1.0
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class JobLogModelAssembler extends RepresentationModelAssemblerSupport<JobLog, JobLogModel> {
 
     /**
-     * Creates a new assembler.
+     * Creates a new assembler that builds links relative to {@link JobLogController}.
      */
     public JobLogModelAssembler() {
         super(JobLogController.class, JobLogModel.class);

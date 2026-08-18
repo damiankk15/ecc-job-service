@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Internal, service-to-service endpoint for recording job log lines. This is where companies-service (or, until it exists, whatever stands in for it)
- * reports execution progress — kept under {@code /internal} rather than {@code /api} so it can be locked down to service-to-service auth separately
- * from the user-facing API once that's added.
+ * Internal, service-to-service endpoint for recording job log lines.
  *
  * @author Damian Kuras
  * @version 1.0
@@ -51,7 +49,7 @@ public class InternalJobLogController {
      *
      * @param jobId the job id
      * @param request the line's severity and text
-     * @return {@code 201 Created} with the recorded line, or {@code 404} if the job doesn't exist
+     * @return {@code 201 Created} with the recorded line, or {@code 404 Not Found} if the job doesn't exist
      */
     @PostMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<ApiResponse<JobLogModel>> appendJobLog(@PathVariable long jobId, @Valid @RequestBody AppendJobLogRequest request) {

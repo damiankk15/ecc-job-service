@@ -33,7 +33,7 @@ public final class JobSpecifications {
      * @param startedAt exact start instant to match
      * @param finishedAt exact finish instant to match
      * @param jobStatus exact job status to match
-     * @param triggeredBy user who triggered the job, matched case-insensitively
+     * @param triggeredBy exact triggering user to match
      * @return a specification restricted to the non-null parameters
      */
     public static Specification<Job> filter(
@@ -137,13 +137,13 @@ public final class JobSpecifications {
     }
 
     /**
-     * Matches an exact {@code triggeredBy}, case-insensitively, or no restriction if {@code triggeredBy} is {@code null}.
+     * Matches an exact {@code triggeredBy}, or no restriction if {@code triggeredBy} is {@code null}.
      *
      * @param triggeredBy the triggering user to match
      * @return the resulting specification
      */
     private static Specification<Job> hasTriggeredBy(String triggeredBy) {
-        return (root, query, cb) -> triggeredBy == null ? null : cb.equal(cb.lower(root.get("triggeredBy")), triggeredBy.toLowerCase());
+        return equal("triggeredBy", triggeredBy);
     }
 
     /**

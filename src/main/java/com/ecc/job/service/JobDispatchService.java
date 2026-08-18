@@ -110,8 +110,8 @@ public class JobDispatchService {
     }
 
     /**
-     * Checks whether an earlier job of the same type and overlapping scope is still active. Only jobs with a smaller id than {@code candidate}
-     * count — {@code id} is a reliable, collision-free insertion-order signal (unlike {@code createdAt}, which is truncated to whole seconds and can
+     * Checks whether an earlier job of the same type and overlapping scope is still active. Only jobs with a smaller id than {@code candidate} count
+     * — {@code id} is a reliable, collision-free insertion-order signal (unlike {@code createdAt}, which is truncated to whole seconds and can
      * be identical for jobs created moments apart).
      *
      * @param candidate the job to check

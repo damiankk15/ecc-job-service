@@ -4,7 +4,7 @@ import com.ecc.job.model.Job;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * Request body for reporting that a {@link Job} finished, posted by companies-service once its execution of the job is done.
+ * Request body for reporting that a {@link Job} finished, posted by whichever downstream service was executing it.
  *
  * @param success whether the job succeeded
  * @author Damian Kuras

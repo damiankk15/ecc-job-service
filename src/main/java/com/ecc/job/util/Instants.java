@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 /**
- * Timestamp helper shared by anything that persists an {@code Instant} on a {@link com.ecc.job.model.Job}.
+ * Timestamp helper shared by anything in this codebase that needs to persist the current instant.
  *
  * @author Damian Kuras
  * @version 1.0

@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
- * Translates exceptions thrown anywhere in the request-handling chain into the API's standard {@link ApiResponse} error envelope, so every failure
- * — expected or not — comes back in the same shape.
+ * Translates exceptions thrown anywhere in the request-handling chain into the API's standard {@link ApiResponse} error envelope, so every failure —
+ * expected or not — comes back in the same shape.
  *
  * @author Damian Kuras
  * @version 1.0

@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Internal, service-to-service endpoints for actions companies-service (or, until it exists, whatever stands in for it) takes on a job it's
- * executing — currently just reporting that it finished, with room for more as that integration grows. Kept under {@code /internal} for the same
- * reason as {@link InternalJobLogController}.
+ * Internal, service-to-service endpoint for reporting that a job finished.
  *
  * @author Damian Kuras
  * @version 1.0

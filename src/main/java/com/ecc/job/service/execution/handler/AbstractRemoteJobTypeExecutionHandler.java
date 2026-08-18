@@ -34,9 +34,9 @@ public abstract class AbstractRemoteJobTypeExecutionHandler implements JobTypeEx
      * Creates a new handler that POSTs to {@code path} on the given base URL. Builds its own {@link RestClient} via the static factory rather than
      * an injected {@code RestClient.Builder}, since that auto-configured bean isn't reliably available in this environment.
      *
-     * @param baseUrl the target service's base URL, e.g. {@code http://company-service.<namespace>.svc.cluster.local:8080}
-     * @param path this job type's endpoint on that service, e.g. {@code /internal/companies/list-update} — specific to the job type this handler
-     *     {@link #supports()}, not shared with other handlers even when they target the same service
+     * @param baseUrl the target service's base URL
+     * @param path this job type's endpoint on that service — specific to the job type this handler {@link #supports()}, not shared with other
+     *     handlers even when they target the same service
      * @param events used to publish a failed {@link JobCompletedEvent} if the handoff call itself fails
      */
     protected AbstractRemoteJobTypeExecutionHandler(String baseUrl, String path, ApplicationEventPublisher events) {

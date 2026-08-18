@@ -77,7 +77,7 @@ public class JobController {
      * @param startedAt ISO-8601 instant the job must have started at exactly
      * @param finishedAt ISO-8601 instant the job must have finished at exactly
      * @param jobStatus exact job status to match
-     * @param triggeredBy user who triggered the job (case-insensitive)
+     * @param triggeredBy exact triggering user to match
      * @param pageable page number, size, and sort order
      * @return {@code 200 OK} with the matching jobs as a HATEOAS page
      */
@@ -102,7 +102,7 @@ public class JobController {
      * Fetches a single job by id.
      *
      * @param jobId the job id
-     * @return {@code 200 OK} with the job, or {@code 404} if it doesn't exist
+     * @return {@code 200 OK} with the job, or {@code 404 Not Found} if it doesn't exist
      */
     @GetMapping(value = "/{jobId}", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<ApiResponse<JobModel>> getJob(@PathVariable long jobId) {
@@ -113,7 +113,8 @@ public class JobController {
      * Cancels a running or queued job.
      *
      * @param jobId the job id
-     * @return {@code 200 OK} with the cancelled job, or {@code 400} if the job isn't currently {@link JobStatus#RUNNING} or {@link JobStatus#QUEUED}
+     * @return {@code 200 OK} with the cancelled job, or {@code 400 Bad Request} if the job isn't currently {@link JobStatus#RUNNING} or
+     *     {@link JobStatus#QUEUED}
      */
     @PostMapping(value = "/{jobId}/cancel", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<ApiResponse<JobModel>> cancelJob(@PathVariable long jobId) {
@@ -124,7 +125,7 @@ public class JobController {
      * Deletes a job.
      *
      * @param jobId the job id
-     * @return {@code 204 No Content}, or {@code 404} if the job doesn't exist
+     * @return {@code 204 No Content}, or {@code 404 Not Found} if the job doesn't exist
      */
     @DeleteMapping("/{jobId}")
     public ResponseEntity<Void> deleteJob(@PathVariable long jobId) {

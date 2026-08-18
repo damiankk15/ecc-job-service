@@ -28,7 +28,7 @@ public interface JobService {
      * @param startedAt exact start instant to match
      * @param finishedAt exact finish instant to match
      * @param jobStatus exact job status to match
-     * @param triggeredBy user who triggered the job, matched case-insensitively
+     * @param triggeredBy exact triggering user to match
      * @param pageable page number, size, and sort order
      * @return the matching jobs
      */

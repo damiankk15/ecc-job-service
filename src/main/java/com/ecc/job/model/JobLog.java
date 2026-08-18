@@ -25,10 +25,10 @@ public class JobLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "job_id", nullable = false)
+    @Column(nullable = false)
     private Long jobId;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(nullable = false)
     private Instant createdAt;
 
     @Enumerated(EnumType.STRING)

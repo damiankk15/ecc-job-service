@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
  * Spring Data repository for {@link Job}s. {@link JpaSpecificationExecutor} enables the dynamic, multi-field filtering built by
- * {@link JobSpecifications} and used in {@code JobService.list(...)}; everything else (save, findById, delete, ...) comes from {@link JpaRepository}.
+ * {@link JobSpecifications}.
  *
  * @author Damian Kuras
  * @version 1.0

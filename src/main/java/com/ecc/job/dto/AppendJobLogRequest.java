@@ -6,8 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * Request body for recording a new {@link JobLog} line, posted by companies-service (or, until it exists, whatever stands in for it) as it executes
- * a job.
+ * Request body for recording a new {@link JobLog} line, posted by whichever downstream service is executing the job.
  *
  * @param level the line's severity
  * @param message the line's text; must not be blank
