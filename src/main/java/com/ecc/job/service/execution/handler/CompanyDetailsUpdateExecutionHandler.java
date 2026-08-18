@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Starts {@link JobType#COMPANY_DETAILS_UPDATE} jobs by calling companies-service.
@@ -21,16 +22,18 @@ public class CompanyDetailsUpdateExecutionHandler extends AbstractRemoteJobTypeE
     /**
      * Creates a new handler that calls companies-service at the given base URL and path.
      *
+     * @param restTemplate the shared client to POST with
      * @param baseUrl companies-service's base URL
      * @param path companies-service's endpoint for starting a company details-update job
      * @param events used to publish a failed {@link JobCompletedEvent} if the handoff call itself fails
      */
     public CompanyDetailsUpdateExecutionHandler(
+        RestTemplate restTemplate,
         @Value("${company.service.base-url}") String baseUrl,
         @Value("${company.service.company-details-update-path}") String path,
         ApplicationEventPublisher events
     ) {
-        super(baseUrl, path, events);
+        super(restTemplate, baseUrl, path, events);
     }
 
     /**
